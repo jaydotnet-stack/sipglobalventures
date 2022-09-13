@@ -1,0 +1,4 @@
+Site Details
+------------
+The modal Dialog Title is modified using
+demo.widget.js

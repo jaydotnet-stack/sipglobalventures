@@ -1,0 +1,27 @@
+<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed'); ?>
+
+ERROR - 2022-09-04 11:58:18 --> 404 Page Not Found --> assets
+ERROR - 2022-09-04 11:58:18 --> 404 Page Not Found --> assets
+ERROR - 2022-09-04 11:58:18 --> 404 Page Not Found --> assets
+ERROR - 2022-09-04 11:58:19 --> 404 Page Not Found --> assets
+ERROR - 2022-09-04 11:58:19 --> 404 Page Not Found --> assets
+ERROR - 2022-09-04 11:58:51 --> 404 Page Not Found --> assets
+ERROR - 2022-09-04 11:58:51 --> 404 Page Not Found --> assets
+ERROR - 2022-09-04 11:58:51 --> 404 Page Not Found --> assets
+ERROR - 2022-09-04 11:58:51 --> 404 Page Not Found --> assets
+ERROR - 2022-09-04 11:58:51 --> 404 Page Not Found --> assets
+ERROR - 2022-09-04 12:02:04 --> 404 Page Not Found --> assets
+ERROR - 2022-09-04 12:02:04 --> 404 Page Not Found --> assets
+ERROR - 2022-09-04 12:02:04 --> 404 Page Not Found --> assets
+ERROR - 2022-09-04 12:02:04 --> 404 Page Not Found --> assets
+ERROR - 2022-09-04 12:02:04 --> 404 Page Not Found --> assets
+ERROR - 2022-09-04 12:05:44 --> 404 Page Not Found --> assets
+ERROR - 2022-09-04 12:05:44 --> 404 Page Not Found --> assets
+ERROR - 2022-09-04 12:05:44 --> 404 Page Not Found --> assets
+ERROR - 2022-09-04 12:05:44 --> 404 Page Not Found --> assets
+ERROR - 2022-09-04 12:05:44 --> 404 Page Not Found --> assets
+ERROR - 2022-09-04 12:06:50 --> 404 Page Not Found --> assets
+ERROR - 2022-09-04 12:06:50 --> 404 Page Not Found --> assets
+ERROR - 2022-09-04 12:06:50 --> 404 Page Not Found --> assets
+ERROR - 2022-09-04 12:06:50 --> 404 Page Not Found --> assets
+ERROR - 2022-09-04 12:06:50 --> 404 Page Not Found --> assets
