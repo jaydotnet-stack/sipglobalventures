@@ -1,0 +1,192 @@
+Public Sub generateCoureRegistration()
+        If ListBox1.Items.Count = 0 Or ListBox2.Items.Count = 0 Then
+            MsgInfo("Students/Courses has not been Selected")
+            Exit Sub
+        End If
+        If mCblSchool.Text = "" Or mCblDepartment.Text = "" Then
+            MsgInfo("Please select the school or department")
+        End If
+
+        CreatedTable = ""
+        CreatedTable += "CREATE TABLE SemesterCourseFormRegistration ("
+        CreatedTable += "Id int Identity (1,1), MatricNo varchar(50),Fullname varchar(150), nYear varchar(9),"
+        CreatedTable += "Session varchar(9), Semester varchar(50), Department varchar(300),"
+
+        For counter = 1 To 15 'ListBox2.Items.Count
+            If counter <= 14 Then
+                CreatedTable += "CourseCode" & Trim(Str(counter)) & " varchar(9), CourseTitle" & Trim(Str(counter)) & " varchar(150),CourseUnit" & Trim(Str(counter)) & " char(1),"
+            Else
+                CreatedTable += "CourseCode" & Trim(Str(counter)) & " varchar(9), CourseTitle" & Trim(Str(counter)) & " varchar(150),CourseUnit" & Trim(Str(counter)) & " char(1)"
+            End If
+
+        Next
+
+        CreatedTable += ")"
+        SqlString = CreatedTable
+
+        Try
+            MyDB.Execute(SqlString)
+            'Stop
+        Catch ex As Exception
+            'Table Exist
+            'Stop
+        End Try
+
+        ReDim CourseCodeArray(ListBox2.Items.Count)
+        ReDim CourseTitle(ListBox2.Items.Count) : ReDim CourseUnit(ListBox2.Items.Count)
+
+        Dim courseUnt = "" : Dim courseTitl = ""
+        'ADD COURSES TO COURSE FORM TABLE
+        For i = 0 To ListBox1.Items.Count - 1
+            SqlString = "SELECT * From SemesterCourseFormRegistration WHERE MatricNo='" & ListBox1.Items.Item(i) & "' AND Session='" & MDIParent1.mCblSession1.Text & "' AND Semester='" & MDIParent1.mCblSemester1.Text & "'"
+            With MyRs
+                .CursorLocation = ADODB.CursorLocationEnum.adUseClient
+                .Open(SqlString, MyDB, ADODB.CursorTypeEnum.adOpenKeyset, ADODB.LockTypeEnum.adLockOptimistic)
+                If .RecordCount = 0 Then
+                    .AddNew()
+                    .Fields("MatricNo").Value = ListBox1.Items.Item(i)
+                    For j = 0 To matricNoArray.Length - 1
+                        If matricNoArray(j) = ListBox1.Items.Item(i) Then
+                            .Fields("Fullname").Value = surnameArray(j) & " " & othernameArray(j)
+                            '  Stop
+                            Exit For
+                        End If
+                        ' Stop
+                    Next
+                    ' Stop
+                    .Fields("nYear").Value = MDIParent1.mCblYear1.Text
+                    .Fields("Department").Value = mCblDepartment.Text
+                    .Fields("Session").Value = MDIParent1.mCblSession1.Text
+                    .Fields("Semester").Value = MDIParent1.mCblSemester1.Text
+                    For k = 0 To ListBox2.Items.Count - 1
+                        .Fields("CourseCode" & Trim(Str(k + 1))).Value = ListBox2.Items.Item(k)
+                        SqlStringX = "SELECT * FROM GeneralCoursesTable WHERE CourseCode='" & ListBox2.Items.Item(k) & "'"
+                        With MyRsX
+                            .CursorLocation = ADODB.CursorLocationEnum.adUseClient
+                            .Open(SqlStringX, MyDB, ADODB.CursorTypeEnum.adOpenKeyset, ADODB.LockTypeEnum.adLockOptimistic)
+                            If .RecordCount > 0 Then
+                                courseTitl = .Fields("CourseTitle").Value
+                                courseUnt = .Fields("CourseUnit").Value
+                            End If
+                            .Close()
+                        End With
+                        .Fields("CourseTitle" & Trim(Str(k + 1))).Value = courseTitl
+                        .Fields("CourseUnit" & Trim(Str(k + 1))).Value = courseUnt
+                        'Stop
+                    Next
+                Else
+                    'Course form already done
+                End If
+                .Update()
+                .Close()
+            End With
+        Next
+
+        TableCreationStatus = True
+        Try
+            MyDB.Execute("DROP TABLE SemesterTemporaryCourseFormRegistration")
+            TableCreationStatus = False
+            'Stop
+        Catch ex As Exception
+            TableCreationStatus = True
+
+        End Try
+
+        CreatedTable = ""
+        CreatedTable += "CREATE TABLE SemesterTemporaryCourseFormRegistration ("
+        CreatedTable += "Id int Identity (1,1), MatricNo varchar(50) primary key,Fullname varchar(150), nYear varchar(9),"
+        CreatedTable += "Session varchar(9), Semester varchar(50), Department varchar(300),"
+
+        For counter = 1 To ListBox2.Items.Count
+            If counter <= 14 Then
+                CreatedTable += "CourseCode" & Trim(Str(counter)) & " varchar(9), CourseTitle" & Trim(Str(counter)) & " varchar(150),CourseUnit" & Trim(Str(counter)) & " char(1),"
+            Else
+                CreatedTable += "CourseCode" & Trim(Str(counter)) & " varchar(9), CourseTitle" & Trim(Str(counter)) & " varchar(150),CourseUnit" & Trim(Str(counter)) & " char(1)"
+            End If
+
+        Next
+
+        CreatedTable += ")"
+        SqlString = CreatedTable
+        If TableCreationStatus = True Then
+            Try
+                MyDB.Execute(SqlString)
+
+            Catch ex As Exception
+                MsgError("Error creating temporary semester course form table")
+                Exit Sub
+            End Try
+        Else
+            'Table already exist but was eventually dropped
+            MyDB.Execute(SqlString)
+        End If
+        Dim RecordTag As Integer = 0
+        Dim matricNo = "" : Dim fullname = "" : Dim year = "" : Dim department = "" : Dim session = "" : Dim semester = ""
+        For i = 0 To ListBox1.Items.Count - 1
+            'FETCHING FROM COURSE FORM TABLE
+            SqlString = "SELECT * From SemesterCourseFormRegistration WHERE MatricNo='" & ListBox1.Items.Item(i) & "' AND Session='" & MDIParent1.mCblSession1.Text & "' AND Semester='" & MDIParent1.mCblSemester1.Text & "'"
+            With MyRs
+                .CursorLocation = ADODB.CursorLocationEnum.adUseClient
+                .Open(SqlString, MyDB, ADODB.CursorTypeEnum.adOpenKeyset, ADODB.LockTypeEnum.adLockOptimistic)
+                If .RecordCount > 0 Then
+                    RecordTag += 1
+                    .MoveFirst()
+                    matricNo = .Fields("MatricNo").Value
+                    fullname = .Fields("Fullname").Value
+                    year = .Fields("nYear").Value
+                    department = .Fields("Department").Value
+                    session = .Fields("Session").Value
+                    semester = .Fields("Semester").Value
+
+                    ReDim CourseCodeArray(ListBox2.Items.Count)
+                    ReDim CourseTitle(ListBox2.Items.Count) : ReDim CourseUnit(ListBox2.Items.Count)
+                    For k = 0 To ListBox2.Items.Count - 1
+                        CourseCodeArray(k) = .Fields("CourseCode" & Trim(Str(k + 1))).Value
+                        CourseTitle(k) = .Fields("CourseTitle" & Trim(Str(k + 1))).Value
+                        CourseUnit(k) = .Fields("CourseUnit" & Trim(Str(k + 1))).Value
+                    Next
+                Else
+                    'Course form already done
+                End If
+                .Close()
+            End With
+
+            'INSERTING INTO TEMPORARY COURSR FORM TABLE WHICH WOULD FEED THE REPORT VIEW
+            SqlString = "SELECT * From SemesterTemporaryCourseFormRegistration WHERE MatricNo='" & ListBox1.Items.Item(i) & "' AND Session='" & MDIParent1.mCblSession1.Text & "' AND Semester='" & MDIParent1.mCblSemester1.Text & "'"
+            With MyRs
+                .CursorLocation = ADODB.CursorLocationEnum.adUseClient
+                .Open(SqlString, MyDB, ADODB.CursorTypeEnum.adOpenKeyset, ADODB.LockTypeEnum.adLockOptimistic)
+                If .RecordCount = 0 Then
+                    .AddNew()
+                    .Fields("MatricNo").Value = matricNo
+                    .Fields("Fullname").Value = fullname
+                    .Fields("nYear").Value = year
+                    .Fields("Department").Value = department
+                    .Fields("Session").Value = session
+                    .Fields("Semester").Value = semester
+
+                    For k = 0 To ListBox2.Items.Count - 1
+                        .Fields("CourseCode" & Trim(Str(k + 1))).Value = CourseCodeArray(k)
+                        .Fields("CourseTitle" & Trim(Str(k + 1))).Value = CourseTitle(k)
+                        .Fields("CourseUnit" & Trim(Str(k + 1))).Value = CourseUnit(k)
+                    Next
+                Else
+                    'Course already present for the student
+                End If
+                .Update()
+                .Close()
+            End With
+        Next
+
+        If RecordTag > 0 Then
+            MsgSuccess("Record Loaded Successfully")
+            frmLoadCourseRegistrationForm.ShowDialog()
+        Else
+            MsgInfo("No Record for Student in the Selected Semester, Please contact the system administrator")
+        End If
+
+        ListBox1.Items.Clear()
+        ListBox2.Items.Clear()
+        ListView1.Items.Clear()
+        ListView2.Items.Clear()
+    End Sub
